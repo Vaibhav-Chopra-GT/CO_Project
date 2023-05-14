@@ -227,3 +227,20 @@ def assembler(instruction):
         else:
             if instruction[0] != "var":
                 x += 1
+
+#reading the instructions
+f = open("./input.txt")
+data = f.read()
+data = data.split("\n")
+x = 0
+
+for code in data:
+    assembler(code)
+
+
+label_run = True
+x = 0
+for code in data:
+    assembler(code)
+
+f.close()
