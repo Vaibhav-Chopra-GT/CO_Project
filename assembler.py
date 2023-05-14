@@ -57,3 +57,19 @@ def seven_bit(binary):
     else:
         binary = "0"*(7 - len(binary))+binary
         return binary
+
+#assembler main program
+
+def assembler(instruction):
+    
+    #defining variables
+    global variable_counter
+    global instruction_start
+    global variable_error
+    global overflow
+    global instruction_type
+    global end
+    global not_defined
+    global syntax_error
+    global hlt_error
+    global FLAG_error
