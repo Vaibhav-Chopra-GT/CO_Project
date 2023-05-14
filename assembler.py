@@ -28,4 +28,9 @@ not_defined = False
 syntax_error = False
 hlt_error = False
 FLAG_error = False
-
+label_counter = 0
+label_need = []
+label_naming_counter = 0
+label_error = False
+label_run = False
+label_declaration = False
