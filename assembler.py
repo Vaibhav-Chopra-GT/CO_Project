@@ -207,3 +207,23 @@ def assembler(instruction):
         write_data.append([seven_bit(decimaltobinary(x)),machine_code])
         x += 1
     
+    #label handeling
+    if label_run:
+        if instruction[0] in instruction_sete:
+            if write_data[x][0] == label_need[label_naming_counter] :
+                if instruction[1] in labels:
+                    try:
+                        write_data[x][1] += labels[instruction[1]]
+                    except Exception as e:
+                        label_error = True
+                        print("invalid lable stated")
+                        error.append(["invalid lable stated",x])
+                else:
+                    label_error = True
+                    print("invalid lable stated")
+                    error.append(["invalid lable stated",x])
+            label_naming_counter += 1
+            x += 1
+        else:
+            if instruction[0] != "var":
+                x += 1
