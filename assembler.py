@@ -88,3 +88,80 @@ def assembler(instruction):
     variable_declaration = False
     label_declaration = False
     
+    #detecting the type of instruction
+    if not label_run:
+        if instruction == [""]:
+            return 0
+        elif instruction[0] in instruction_seta:
+            if length == 4:
+                instruction_start = True
+                unused_bits = 2
+                machine_code += instruction_seta[instruction[0]] + "_"
+                machine_code += "0"*unused_bits + "_"
+                instruction_type = "a"
+        
+        elif instruction[0] in instruction_setb and instruction[length-1][0] == "$":
+            if length == 3:
+                instruction_start = True
+                unused_bits = 1
+                machine_code += instruction_setb[instruction[0]] + "_"
+                machine_code += "0"*unused_bits + "_"
+                instruction_type = "b"
+        
+        elif instruction[0] in instruction_setc:
+            if length == 3:
+                instruction_start = True
+                unused_bits = 5
+                machine_code += instruction_setc[instruction[0]] + "_"
+                machine_code += "0"*unused_bits + "_"
+                instruction_type = "c"
+        
+        elif instruction[0] in instruction_setd:
+            if length == 3:
+                instruction_start = True
+                unused_bits = 1
+                machine_code += instruction_setd[instruction[0]] + "_"
+                machine_code += "0"*unused_bits + "_"
+                instruction_type = "d"
+        
+        elif instruction[0] in instruction_sete:
+            if length == 2:
+                instruction_start = True
+                unused_bits = 4
+                machine_code += instruction_sete[instruction[0]] + "_"
+                machine_code += "0"*unused_bits + "_"
+                instruction_type = "e"
+                label_need.append(seven_bit(decimaltobinary(x)))
+        
+        elif instruction[0] in instruction_setf:
+            if length == 1:
+                instruction_start = True
+                unused_bits = 11
+                machine_code += instruction_setf[instruction[0]] + "_"
+                machine_code += "0"*unused_bits
+                instruction_type = "f"
+                end = True
+        
+        #variable declation
+        elif instruction[0].lower() == "var" and not label_run:
+            if instruction_start:
+                variable_error = True
+                print("VARIABLE NOT DEEFINED AT THE START OF THE CODE")
+            else:
+                variable_counter += 1
+                variables[instruction[1]] = seven_bit(decimaltobinary(variable_counter))
+                variable_declaration = True
+        #label defining
+        elif instruction[0][-1:] == ":" :
+            label_counter += 1
+            labels[instruction[0][:-1]] = seven_bit(decimaltobinary(x))
+            labeled = True
+            assembler("".join(instruction[1:]))
+            label_declaration = True
+            
+        else:
+            error.append(["SYNTAX ERROR",x])
+            print("SYNTAX ERROR")
+            syntax_error = True
+
+    
