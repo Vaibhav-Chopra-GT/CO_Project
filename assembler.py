@@ -244,3 +244,23 @@ for code in data:
     assembler(code)
 
 f.close()
+
+#checking halt instruction is given
+
+if write_data[len(write_data)-1][1] != "11010_00000000000":
+        error.append(["HALT INSTRUCTION NOT GIVEN",x])
+        print("HALT INSTRUCTION NOT GIVEN")
+        hlt_error = True
+
+#writing the machine code in a file
+if not overflow and not not_defined and not syntax_error and not hlt_error and not variable_error and not FLAG_error and not label_error:
+    f = open("D:/college/2nd sem/CO/machine code.txt","a")
+    for lines in write_data:
+        print(f"{lines[1]}\n")
+        f.write(f"{lines[1]}\n")
+
+    f.close()
+else:
+    f = open("D:/college/2nd sem/CO/machine code.txt","a")
+    f.write(f"{error[0][0]} at line {error[0][1]+1}")
+    f.close()
