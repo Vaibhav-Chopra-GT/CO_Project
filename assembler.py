@@ -73,3 +73,18 @@ def assembler(instruction):
     global syntax_error
     global hlt_error
     global FLAG_error
+    global label_counter
+    global labels
+    global x
+    global label_run
+    global label_need
+    global label_naming_counter
+    global label_error
+    global labeled
+    global error
+    machine_code = ""
+    instruction = instruction.split(" ")
+    length = len(instruction)
+    variable_declaration = False
+    label_declaration = False
+    
