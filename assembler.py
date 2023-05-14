@@ -96,40 +96,40 @@ def assembler(instruction):
             if length == 4:
                 instruction_start = True
                 unused_bits = 2
-                machine_code += instruction_seta[instruction[0]] + "_"
-                machine_code += "0"*unused_bits + "_"
+                machine_code += instruction_seta[instruction[0]] 
+                machine_code += "0"*unused_bits
                 instruction_type = "a"
         
         elif instruction[0] in instruction_setb and instruction[length-1][0] == "$":
             if length == 3:
                 instruction_start = True
                 unused_bits = 1
-                machine_code += instruction_setb[instruction[0]] + "_"
-                machine_code += "0"*unused_bits + "_"
+                machine_code += instruction_setb[instruction[0]]
+                machine_code += "0"*unused_bits
                 instruction_type = "b"
         
         elif instruction[0] in instruction_setc:
             if length == 3:
                 instruction_start = True
                 unused_bits = 5
-                machine_code += instruction_setc[instruction[0]] + "_"
-                machine_code += "0"*unused_bits + "_"
+                machine_code += instruction_setc[instruction[0]]
+                machine_code += "0"*unused_bits
                 instruction_type = "c"
         
         elif instruction[0] in instruction_setd:
             if length == 3:
                 instruction_start = True
                 unused_bits = 1
-                machine_code += instruction_setd[instruction[0]] + "_"
-                machine_code += "0"*unused_bits + "_"
+                machine_code += instruction_setd[instruction[0]]
+                machine_code += "0"*unused_bits
                 instruction_type = "d"
         
         elif instruction[0] in instruction_sete:
             if length == 2:
                 instruction_start = True
                 unused_bits = 4
-                machine_code += instruction_sete[instruction[0]] + "_"
-                machine_code += "0"*unused_bits + "_"
+                machine_code += instruction_sete[instruction[0]]
+                machine_code += "0"*unused_bits
                 instruction_type = "e"
                 label_need.append(seven_bit(decimaltobinary(x)))
         
@@ -137,7 +137,7 @@ def assembler(instruction):
             if length == 1:
                 instruction_start = True
                 unused_bits = 11
-                machine_code += instruction_setf[instruction[0]] + "_"
+                machine_code += instruction_setf[instruction[0]]
                 machine_code += "0"*unused_bits
                 instruction_type = "f"
                 end = True
@@ -200,8 +200,6 @@ def assembler(instruction):
                 error.append(["VARIABLE NOT DEFINED",x])
                 not_defined = True
 
-            if i != (length-1):
-                machine_code += "_"
     #storing machine code to write in the file
     if not variable_declaration and not label_run and not label_declaration:
         write_data.append([seven_bit(decimaltobinary(x)),machine_code])
@@ -247,7 +245,7 @@ f.close()
 
 #checking halt instruction is given
 
-if write_data[len(write_data)-1][1] != "11010_00000000000":
+if write_data[len(write_data)-1][1] != "1101000000000000":
         error.append(["HALT INSTRUCTION NOT GIVEN",x])
         print("HALT INSTRUCTION NOT GIVEN")
         hlt_error = True
@@ -256,7 +254,6 @@ if write_data[len(write_data)-1][1] != "11010_00000000000":
 if not overflow and not not_defined and not syntax_error and not hlt_error and not variable_error and not FLAG_error and not label_error:
     f = open("./machine_code.txt","a")
     for lines in write_data:
-        print(f"{lines[1]}\n")
         f.write(f"{lines[1]}\n")
 
     f.close()
