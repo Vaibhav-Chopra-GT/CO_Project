@@ -13,3 +13,19 @@ labels = {}
 variables = {}
 FLAG_data = []
 error = []
+
+#defining variables
+immediate_value = ""
+variable_error = False
+overflow = False
+write_data = []
+variable_counter = 0
+instruction_start = False
+end = False
+overflow = False
+instruction_type = ""
+not_defined = False
+syntax_error = False
+hlt_error = False
+FLAG_error = False
+
