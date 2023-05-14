@@ -163,5 +163,47 @@ def assembler(instruction):
             error.append(["SYNTAX ERROR",x])
             print("SYNTAX ERROR")
             syntax_error = True
+    #converting registers and memory addreses to machine code
+    if not syntax_error and instruction_start and instruction_type != "e" and not label_run and not label_declaration :
+        for i in range(1,length):
+            if instruction[i] == "FLAG":
+                if instruction_type == "c":
+                    if instruction[0] == "mov":
+                        machine_code += registers[instruction[i]]
+                    else:
+                        error.append(["FLAG CAN'T BE USED THER",x])
+                        print("FLAG CAN'T BE USED THERE")
+                        FLAG_error = True 
+                else:
+                    error.append(["FLAG CAN'T BE USED THER",x])
+                    print("FLAG CAN'T BE USED THERE")
+                    FLAG_error = True 
 
+            elif instruction[i][0] == "$":
+                decimaltobinary(int(instruction[i][1:]))
+                if len(seven_bit(immediate_value)) == 7:
+                    machine_code += seven_bit(immediate_value)
+            
+            elif instruction[i] in variables:
+                machine_code += variables[instruction[i]]
+            
+
+            elif instruction[i][0] == "R":
+                if instruction[i] in registers:
+                    machine_code += registers[instruction[i]][0]
+                else:
+                    error.append(["REGISTER NOT IN RANGE",x])
+                    print("REGISTERS NOT IN RANGE")
+                    not_defined = True
+
+            elif instruction[i] not in variables and instruction[i] not in registers:
+                error.append(["VARIABLE NOT DEFINED",x])
+                not_defined = True
+
+            if i != (length-1):
+                machine_code += "_"
+    #storing machine code to write in the file
+    if not variable_declaration and not label_run and not label_declaration:
+        write_data.append([seven_bit(decimaltobinary(x)),machine_code])
+        x += 1
     
