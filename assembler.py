@@ -34,3 +34,26 @@ label_naming_counter = 0
 label_error = False
 label_run = False
 label_declaration = False
+
+#decimal to binary conversion with seven digits
+def decimaltobinary(ip_val):
+    global immediate_value
+    immediate_value = ""
+    if ip_val >= 1:
+        decimaltobinary(ip_val // 2)
+        immediate_value += str(ip_val % 2)
+    return (immediate_value)
+
+
+#7 bit memory and immediate variables
+def seven_bit(binary):
+    global immediate_value
+    global overflow
+    global end
+    if len(binary)>7:
+        overflow = True
+        error.append(["overflow",x])
+        print("MORE THAN 7 BITS")
+    else:
+        binary = "0"*(7 - len(binary))+binary
+        return binary
