@@ -8,9 +8,9 @@ instruction_setc = {"mov":"00011","div":"00111","not":"01101","cmp":"01110"}
 instruction_setd = {"ld":"00100","st":"00101"}
 instruction_sete = {"jmp":"01111","jlt":"11100","jgt":"11101","je":"11111"}
 instruction_setf = {"hlt":"11010"}
-registers = {"R0":["000",0],"R1":["001",0],"R2":["010",0],"R3":["011",0],"R4":["100",0],"R5":["101",0],"R5":["110",0],"R6":["111",0],"FLAG":["111"]}
+registers = {"R0":["000",0],"R1":["001",0],"R2":["010",0],"R3":["011",0],"R4":["100",0],"R5":["101",0],"R6":["110",0],"R7":["111",0],"FLAGS":["111"]}
 labels = {}
-variables = {}
+variables = {"FLAGS":"111"}
 FLAG_data = []
 error = []
 
@@ -53,7 +53,6 @@ def seven_bit(binary):
     if len(binary)>7:
         overflow = True
         error.append(["overflow",x])
-        print("MORE THAN 7 BITS")
     else:
         binary = "0"*(7 - len(binary))+binary
         return binary
@@ -83,6 +82,7 @@ def assembler(instruction):
     global labeled
     global error
     machine_code = ""
+    instruction = " ".join(instruction.split("\t"))
     instruction = instruction.split(" ")
     length = len(instruction)
     variable_declaration = False
@@ -146,7 +146,6 @@ def assembler(instruction):
         elif instruction[0].lower() == "var" and not label_run:
             if instruction_start:
                 variable_error = True
-                print("VARIABLE NOT DEEFINED AT THE START OF THE CODE")
             else:
                 variable_counter += 1
                 variables[instruction[1]] = seven_bit(decimaltobinary(variable_counter))
@@ -156,12 +155,11 @@ def assembler(instruction):
             label_counter += 1
             labels[instruction[0][:-1]] = seven_bit(decimaltobinary(x))
             labeled = True
-            assembler("".join(instruction[1:]))
+            assembler((" ".join(instruction[1:])).strip())
             label_declaration = True
             
         else:
             error.append(["SYNTAX ERROR",x])
-            print("SYNTAX ERROR")
             syntax_error = True
     #converting registers and memory addreses to machine code
     if not syntax_error and instruction_start and instruction_type != "e" and not label_run and not label_declaration :
@@ -172,11 +170,9 @@ def assembler(instruction):
                         machine_code += registers[instruction[i]]
                     else:
                         error.append(["FLAG CAN'T BE USED THER",x])
-                        print("FLAG CAN'T BE USED THERE")
                         FLAG_error = True 
                 else:
                     error.append(["FLAG CAN'T BE USED THER",x])
-                    print("FLAG CAN'T BE USED THERE")
                     FLAG_error = True 
 
             elif instruction[i][0] == "$":
@@ -193,7 +189,6 @@ def assembler(instruction):
                     machine_code += registers[instruction[i]][0]
                 else:
                     error.append(["REGISTER NOT IN RANGE",x])
-                    print("REGISTERS NOT IN RANGE")
                     not_defined = True
 
             elif instruction[i] not in variables and instruction[i] not in registers:
@@ -214,11 +209,9 @@ def assembler(instruction):
                         write_data[x][1] += labels[instruction[1]]
                     except Exception as e:
                         label_error = True
-                        print("invalid lable stated")
                         error.append(["invalid lable stated",x])
                 else:
                     label_error = True
-                    print("invalid lable stated")
                     error.append(["invalid lable stated",x])
             label_naming_counter += 1
             x += 1
@@ -233,13 +226,15 @@ data = data.split("\n")
 x = 0
 
 for code in data:
-    assembler(code)
+    if len(error) == 0:
+        assembler(code.strip)
 
 
 label_run = True
 x = 0
-for code in data:
-    assembler(code)
+if len(error) == 0:
+    for code in data:
+        assembler(code.strip)
 
 f.close()
 
@@ -247,7 +242,6 @@ f.close()
 
 if write_data[len(write_data)-1][1] != "1101000000000000":
         error.append(["HALT INSTRUCTION NOT GIVEN",x])
-        print("HALT INSTRUCTION NOT GIVEN")
         hlt_error = True
 
 #writing the machine code in a file
