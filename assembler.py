@@ -92,6 +92,8 @@ def assembler(instruction):
     if not label_run:
         if instruction == [""]:
             return 0
+        elif end:
+            error.append(["Can't Execute code after hlt",x-1])
         elif instruction[0] in instruction_seta:
             if length == 4:
                 instruction_start = True
@@ -227,14 +229,14 @@ x = 0
 
 for code in data:
     if len(error) == 0:
-        assembler(code.strip)
+        assembler(code.strip())
 
 
 label_run = True
 x = 0
 if len(error) == 0:
     for code in data:
-        assembler(code.strip)
+        assembler(code.strip())
 
 f.close()
 
@@ -253,5 +255,5 @@ if not overflow and not not_defined and not syntax_error and not hlt_error and n
     f.close()
 else:
     f = open("./machine_code.txt","a")
-    f.write(f"{error[0][0]} at line {error[0][1]+1}")
+    f.write(f"{error[0][0]} at line {error[0][1]+1+variable_counter}")
     f.close()
