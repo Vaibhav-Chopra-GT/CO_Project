@@ -28,13 +28,15 @@ not_defined = False
 syntax_error = False
 hlt_error = False
 FLAG_error = False
+variable_need = []
+variable_naming_counter = 0
 label_counter = 0
 label_need = []
 label_naming_counter = 0
 label_error = False
 label_run = False
 label_declaration = False
-
+total_lines = 0
 #decimal to binary conversion with seven digits
 def decimaltobinary(ip_val):
     global immediate_value
@@ -81,6 +83,8 @@ def assembler(instruction):
     global label_error
     global labeled
     global error
+    global variable_need
+    global variable_naming_counter
     machine_code = ""
     instruction = " ".join(instruction.split("\t"))
     instruction = instruction.split(" ")
@@ -149,8 +153,8 @@ def assembler(instruction):
             if instruction_start:
                 variable_error = True
             else:
+                variables[instruction[1]] = seven_bit(decimaltobinary(total_lines + variable_counter))
                 variable_counter += 1
-                variables[instruction[1]] = seven_bit(decimaltobinary(variable_counter))
                 variable_declaration = True
         #label defining
         elif instruction[0][-1:] == ":" :
@@ -222,11 +226,50 @@ def assembler(instruction):
                 x += 1
 
 #reading the instructions
-f = open("./input.txt")
-data = f.read()
-data = data.split("\n")
+data = []
+while True:
+    try:
+        testline = input()
+        data.append(testline)
+    except EOFError:
+        break
 x = 0
 
+for code in data:
+    if len(error) == 0:
+        assembler(code.strip())
+
+
+error = []
+total_lines = x
+variables = {"FLAGS":"111"}
+FLAG_data = []
+write_data = []
+end = False
+immediate_value = ""
+variable_error = False
+overflow = False
+write_data = []
+variable_counter = 0
+instruction_start = False
+end = False
+overflow = False
+instruction_type = ""
+not_defined = False
+syntax_error = False
+hlt_error = False
+FLAG_error = False
+variable_need = []
+variable_naming_counter = 0
+label_counter = 0
+label_need = []
+label_naming_counter = 0
+label_error = False
+label_run = False
+label_declaration = False
+instruction_start = False
+
+x = 0
 for code in data:
     if len(error) == 0:
         assembler(code.strip())
@@ -238,22 +281,21 @@ if len(error) == 0:
     for code in data:
         assembler(code.strip())
 
-f.close()
 
 #checking halt instruction is given
-
-if write_data[len(write_data)-1][1] != "1101000000000000":
-        error.append(["HALT INSTRUCTION NOT GIVEN",x])
-        hlt_error = True
+try:
+    if write_data[len(write_data)-1][1] != "1101000000000000" and len(error) == 0:
+            error.append(["HALT INSTRUCTION NOT GIVEN",x])
+            hlt_error = True
+except Exception as e:
+    pass
 
 #writing the machine code in a file
-if not overflow and not not_defined and not syntax_error and not hlt_error and not variable_error and not FLAG_error and not label_error:
-    f = open("./machine_code.txt","a")
+if len(error) == 0:
     for lines in write_data:
-        f.write(f"{lines[1]}\n")
-
-    f.close()
+        print(f"{lines[1]}")
 else:
-    f = open("./machine_code.txt","a")
-    f.write(f"{error[0][0]} at line {error[0][1]+1+variable_counter}")
-    f.close()
+    print(f"{error[0][0]} at line {error[0][1]+1+variable_counter}")
+
+
+

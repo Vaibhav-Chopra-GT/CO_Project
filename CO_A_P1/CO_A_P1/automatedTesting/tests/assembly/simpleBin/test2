@@ -1,0 +1,5 @@
+sub R0 R1 R2
+sub R2 R3 R4
+sub R3 R1 R5
+sub R0 R1 R2
+hlt
