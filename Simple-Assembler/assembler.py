@@ -55,6 +55,7 @@ def seven_bit(binary):
     if len(binary)>7:
         overflow = True
         error.append(["overflow",x])
+        return binary
     else:
         binary = "0"*(7 - len(binary))+binary
         return binary
