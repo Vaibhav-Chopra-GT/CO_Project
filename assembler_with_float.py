@@ -2,12 +2,13 @@
 
 
 #defining dictionaries
-instruction_seta = {"add":"00000","sub":"00001","mul":"00110","xor":"01010","or":"01011","and":"01100"}
+instruction_seta = {"add":"00000","sub":"00001","mul":"00110","xor":"01010","or":"01011","and":"01100","addf":"10000" , "subf":"10001"}
 instruction_setb = {"mov":"00010","rs":"01000","ls":"01001"}
 instruction_setc = {"mov":"00011","div":"00111","not":"01101","cmp":"01110"}
 instruction_setd = {"ld":"00100","st":"00101"}
 instruction_sete = {"jmp":"01111","jlt":"11100","jgt":"11101","je":"11111"}
 instruction_setf = {"hlt":"11010"}
+instruction_setg = {"movf":"10010"}
 registers = {"R0":["000",0],"R1":["001",0],"R2":["010",0],"R3":["011",0],"R4":["100",0],"R5":["101",0],"R6":["110",0],"R7":["111",0],"FLAGS":["111"]}
 labels = {}
 variables = {"FLAGS":"111"}
@@ -37,6 +38,69 @@ label_error = False
 label_run = False
 label_declaration = False
 total_lines = 0
+
+def dectoieee(number):
+    global x
+    global error
+    l = number.split(".")
+    l1 = "0." + l[1]
+    decimal = float(l1)
+    str1 = ""
+    while decimal != 0:
+        decimal*=2
+        if decimal >= 1:
+            decimal -= 1
+            str1+='1'
+        else:
+            str1+='0'
+    #makes the int part binary
+    st1 = str(bin(int(l[0])))
+    binary_of_int = st1.split("0b")[1]
+
+    #exponent in binary and fixes it to 3 bits
+    exponent_in_decimal = len(binary_of_int) + 2
+    if exponent_in_decimal <=7:
+        exponent_in_binary = str(bin(exponent_in_decimal)).split("0b")[1]
+        if len(exponent_in_binary) <3:
+            spacestr = "0"*(3-len(exponent_in_binary))
+            finalexp = spacestr+exponent_in_binary
+        else:
+            finalexp = exponent_in_binary
+    else:
+        #error message if len exponent > 3 bits
+        error.append(["overflow",x])
+    
+    #mantissa calculation
+    if len(binary_of_int[1:]) == 5:
+        finalmantissa = binary_of_int[1:]
+    elif len(binary_of_int) < 5:
+        finalmantissa = binary_of_int[1:] + str1[0:(5-len(binary_of_int[1:]))]
+    return(finalexp + finalmantissa)
+
+
+def bintodec(n):
+    intdeclist = n.split(".")
+    rev = intdeclist[0][::-1]
+    sum = 0
+    for i in range(0,len(intdeclist[0])):
+        sum += (2**i)*int(rev[i])
+    for j in range(-1, -(len(intdeclist[1])+1),-1):
+        sum += int(intdeclist[1][((-j)-1)])*2**(j)
+    return str(sum)
+
+
+def ieeetodec(binst):
+    expbin = binst[0:3]
+    exbiasdec = int(expbin[0])*(2**2) + int(expbin[1])*(2**1) + int(expbin[2])*(2**0)
+    exp = exbiasdec - 3
+    mantissa = binst[3:]
+    mantissa = "1"+mantissa
+    numberbin = mantissa[0:(exp+1)] +"." + mantissa[(exp+1):]
+    answer = bintodec(numberbin)
+    return float(answer)
+
+
+
 #decimal to binary conversion with seven digits
 def decimaltobinary(ip_val):
     global immediate_value
@@ -148,6 +212,14 @@ def assembler(instruction):
                 machine_code += "0"*unused_bits
                 instruction_type = "f"
                 end = True
+        elif instruction[0] in instruction_setg:
+            if length == 3:
+                instruction_start = True
+                unused_bits = 0
+                machine_code += instruction_setg[instruction[0]]
+                machine_code += "0"*unused_bits
+                instruction_type = "g"
+
         
         #variable declation
         elif instruction[0].lower() == "var" and not label_run:
@@ -183,9 +255,12 @@ def assembler(instruction):
                     FLAG_error = True 
 
             elif instruction[i][0] == "$":
-                decimaltobinary(int(instruction[i][1:]))
-                if len(seven_bit(immediate_value)) == 7:
-                    machine_code += seven_bit(immediate_value)
+                if "." in instruction[i][1:]:
+                    machine_code += dectoieee(str(instruction[1][1:]))
+                else:
+                    decimaltobinary(int(instruction[i][1:]))
+                    if len(seven_bit(immediate_value)) == 7:
+                        machine_code += seven_bit(immediate_value)
             
             elif instruction[i] in variables:
                 machine_code += variables[instruction[i]]
@@ -228,11 +303,13 @@ def assembler(instruction):
 
 #reading the instructions
 data = []
+testline = " "
 while True:
-    try:
+    if testline != "":
         testline = input()
-        data.append(testline)
-    except EOFError:
+        if testline != "":
+            data.append(testline)
+    else:
         break
 x = 0
 
@@ -297,6 +374,4 @@ if len(error) == 0:
         print(f"{lines[1]}")
 else:
     print(f"{error[0][0]} at line {error[0][1]+1+variable_counter}")
-
-
 
