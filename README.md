@@ -41,3 +41,5 @@ Variable address is a 7 bit number counting up for each variable.
 **Checking Halt Instruction**: For checking if the assembly code ends with 'halt'. If not, an error is flagged.
 
 **Writing the Machine Code to a File**: If no errors were encountered during the assembly process, the machine code is written to the output file. Otherwise, the first error encountered is written to the file.
+
+Team Members : Vaibhav Chopra - 2022552, Tarush Garg - 2022537, Tejus Madan - 2022540, Paarth Goyal - 2022343
